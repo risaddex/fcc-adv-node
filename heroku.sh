@@ -1,3 +1,3 @@
 git add .
-git commit -m "serialization of a user Object - 'database should be present...' check"
+git commit -m "serialization of a user Object - Authentication Strategies"
 git push heroku main
