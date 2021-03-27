@@ -37,11 +37,19 @@ myDB(async client => {
       showLogin: true
     })
   })
-
+  // middleware declarations 
   const auth = passport.authenticate('local', { successRedirect: '/profile', failureRedirect: '/' })
-
+  const ensureAuthenticated = function(req, res, next) {
+    if (req.isAuthenticated()) {
+      return next()
+    }
+    res.redirect('/')
+  }
   app.route('/login').post(auth,(req, res) => {
-    
+
+  })
+  app.route('/profile').get(ensureAuthenticated, (req, res) => {
+    res.render(process.cwd() + '/views/pug/profile')
   })
   
 passport.serializeUser((user, done) => {
