@@ -45,12 +45,25 @@ myDB(async client => {
     }
     res.redirect('/')
   }
+  //login
   app.route('/login').post(auth,(req, res) => {
 
   })
+  // profile
   app.route('/profile').get(ensureAuthenticated, (req, res) => {
     res.render(process.cwd() + '/views/pug/profile', { username: req.user.username })
   })
+  app.route('/logout').get((req, res) => {
+    req.logout()
+    res.redirect('/')
+  })
+  // 404
+  app.use((req, res, next) => {
+    res.status(404)
+      .type('text')
+      .send('Not Found');
+  });
+  
   
 passport.serializeUser((user, done) => {
   done(null, user._id)
