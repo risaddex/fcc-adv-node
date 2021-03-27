@@ -1,3 +1,3 @@
 git add .
-git commit -m "serialization of a user Object - How to Put a Profile Together"
+git commit -m "Logging a User Out"
 git push heroku main
