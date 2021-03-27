@@ -3,12 +3,14 @@ require('dotenv').config();
 const express = require('express');
 const myDB = require('./connection');
 const fccTesting = require('./freeCodeCamp/fcctesting.js');
+const { ObjectID } = require('mongodb')
 
 const passport = require('passport')
 const session = require('express-session')
 const app = express();
-
+// setting pug
 app.set('view engine', 'pug')
+// setting passport and express-session
 app.use(session({
   secret: process.env.SESSION_SECRET,
   resave: true,
@@ -18,6 +20,17 @@ app.use(session({
 
 app.use(passport.initialize());
 app.use(passport.session());
+passport.serializeUser((user, done) => {
+  done(null, user._id)
+})
+
+passport.deserializeUser((id, done) => {
+  myDB.findOne({ _id: new ObjectID(id) }, (err, doc) => {
+    done(null,null)
+  })
+})
+
+
 
 fccTesting(app); //For FCC testing purposes
 app.use('/public', express.static(process.cwd() + '/public'));
