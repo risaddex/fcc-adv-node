@@ -33,8 +33,15 @@ myDB(async client => {
   app.route('/').get((req, res) => {
     res.render('pug', {
       title: 'Connected to Database',
-      message: 'Please login'
+      message: 'Please login',
+      showLogin: true
     })
+  })
+
+  const auth = passport.authenticate('local', { successRedirect: '/profile', failureRedirect: '/' })
+
+  app.route('/login').post(auth,(req, res) => {
+    
   })
   
 passport.serializeUser((user, done) => {
@@ -59,6 +66,8 @@ passport.use(new LocalStrategy(
     })
   }
 ))
+
+
 }).catch((e) => {
   app.route('/').get((req, res) => {
     res.render('pug', {
