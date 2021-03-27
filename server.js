@@ -8,8 +8,14 @@ const { ObjectID } = require('mongodb')
 const passport = require('passport')
 const session = require('express-session')
 const app = express();
+
 // setting pug
 app.set('view engine', 'pug')
+
+fccTesting(app); //For FCC testing purposes
+app.use('/public', express.static(process.cwd() + '/public'));
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 // setting passport and express-session
 app.use(session({
   secret: process.env.SESSION_SECRET,
@@ -20,26 +26,41 @@ app.use(session({
 
 app.use(passport.initialize());
 app.use(passport.session());
+//connect to MongoDB
+myDB(async client => {
+  const myDatabase = await client.db('FCC_TESTS').collection('users')
+  // routes
+  app.route('/').get((req, res) => {
+    res.render('pug', {
+      title: 'Connected to the DB',
+      message: 'Please login'
+    })
+  })
+  
+
 passport.serializeUser((user, done) => {
   done(null, user._id)
 })
 
+console.log(passport.serializeUser((user, done) => {
+  done(null,user._id)
+}))
+
 passport.deserializeUser((id, done) => {
-  myDB.findOne({ _id: new ObjectID(id) }, (err, doc) => {
-    done(null,null)
+  myDatabase.findOne({ _id: new ObjectID(id) }, (err, doc) => {
+    done(null,doc)
   })
 })
 
+}).catch(e => {
+  app.route('/').get((req, res) => {
+    res.render('pug', {
+      title: e,
+      message: 'Unable to login'
+    })
+  })
+})
 
-
-fccTesting(app); //For FCC testing purposes
-app.use('/public', express.static(process.cwd() + '/public'));
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-
-app.route('/').get((req, res) => {
-  res.render(process.cwd() + '/views/pug/index', { title: 'Hello', message: 'Please login' });
-});
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
