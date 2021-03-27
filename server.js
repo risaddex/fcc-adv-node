@@ -13,7 +13,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 app.route('/').get((req, res) => {
-  res.render(process.cwd() + '/views/pug');
+  res.render(process.cwd() + '/views/pug', {title: 'Learning to use template engines', message: 'It looks easier than D3.js!'});
 });
 
 const PORT = process.env.PORT || 3000;
