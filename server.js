@@ -32,7 +32,7 @@ myDB(async client => {
   // routes
   app.route('/').get((req, res) => {
     res.render('pug', {
-      title: 'Connected  to Database',
+      title: 'Connected to Database',
       message: 'Please login'
     })
   })
