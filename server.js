@@ -3,7 +3,7 @@ require('dotenv').config();
 const express = require('express');
 const myDB = require('./connection');
 const fccTesting = require('./freeCodeCamp/fcctesting.js');
-const { ObjectID } = require('mongodb')
+const ObjectID = require('mongodb').ObjectID;
 
 const passport = require('passport')
 const session = require('express-session')
