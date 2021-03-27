@@ -28,7 +28,7 @@ app.use(passport.initialize());
 app.use(passport.session());
 //connect to MongoDB
 myDB(async client => {
-  const myDatabase = await client.db('FCC_TESTS').collection('users')
+  const myDatabase = await client.db('database').collection('users')
   // routes
   app.route('/').get((req, res) => {
     res.render('pug', {
