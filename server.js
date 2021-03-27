@@ -28,11 +28,11 @@ app.use(passport.initialize());
 app.use(passport.session());
 //connect to MongoDB
 myDB(async client => {
-  const myDatabase = await client.db('database').collection('users')
+  const myDataBase = await client.db('database').collection('users')
   // routes
   app.route('/').get((req, res) => {
     res.render('pug', {
-      title: 'Connected to the DB',
+      title: 'Connected  to Database',
       message: 'Please login'
     })
   })
@@ -42,17 +42,13 @@ passport.serializeUser((user, done) => {
   done(null, user._id)
 })
 
-console.log(passport.serializeUser((user, done) => {
-  done(null,user._id)
-}))
-
 passport.deserializeUser((id, done) => {
-  myDatabase.findOne({ _id: new ObjectID(id) }, (err, doc) => {
+  myDataBase.findOne({ _id: new ObjectID(id) }, (err, doc) => {
     done(null,doc)
   })
 })
 
-}).catch(e => {
+}).catch((e) => {
   app.route('/').get((req, res) => {
     res.render('pug', {
       title: e,
