@@ -3,11 +3,11 @@ require('dotenv').config();
 const express = require('express');
 const myDB = require('./connection');
 const fccTesting = require('./freeCodeCamp/fcctesting.js');
-const ObjectID = require('mongodb').ObjectID;
-const bcrypt = require('bcrypt')
-
+const session = require('express-session');
 const passport = require('passport')
-const session = require('express-session')
+const routes = require('./routes')
+const auth = require('./auth');
+
 const app = express();
 
 // setting pug
@@ -31,91 +31,9 @@ app.use(passport.session());
 myDB(async client => {
   const myDataBase = await client.db('FCC_TESTS').collection('users')
   // index
-  app.route('/').get((req, res) => {
-    res.render('pug', {
-      title: 'Connected to Database',
-      message: 'Please login',
-      showLogin: true,
-      showRegistration: true
-    })
-  })
-  // middleware declarations 
-  const auth = passport.authenticate('local', { successRedirect: '/profile', failureRedirect: '/' })
-  const ensureAuthenticated = function(req, res, next) {
-    if (req.isAuthenticated()) {
-      return next()
-    }
-    res.redirect('/')
-  }
-  //login
-  app.route('/login').post(auth,(req, res) => {
-
-  })
-  // register
-  app.route('/register').post((req, res, next) => {
-    myDataBase.findOne({ username: req.body.username }, function(err, user){
-      if (err) {
-        next(err)
-      } else if (user) {
-        res.redirect('/')
-      } else {
-        const hash = bcrypt.hashSync(req.body.password, 12)
-        myDataBase.insertOne({
-          username: req.body.username,
-          password: hash
-        }, 
-          (err, doc) => {
-            if (err) {
-              res.redirect('/')
-            } else {
-              // ops property held the new doc :o
-              console.log(doc.ops)
-              next(null, doc.ops[0])
-            }
-          }
-        )
-      }
-    })
-  }, auth)
-  // profile
-  app.route('/profile').get(ensureAuthenticated, (req, res) => {
-    res.render(process.cwd() + '/views/pug/profile', { username: req.user.username })
-  })
-  app.route('/logout').get((req, res) => {
-    req.logout()
-    res.redirect('/')
-  })
-  // 404
-  app.use((req, res, next) => {
-    res.status(404)
-      .type('text')
-      .send('Not Found');
-  });
+  routes(app, myDataBase)
+  auth(app, myDataBase)
   
-  
-passport.serializeUser((user, done) => {
-  done(null, user._id)
-})
-
-passport.deserializeUser((id, done) => {
-  myDataBase.findOne({ _id: new ObjectID(id) }, (err, doc) => {
-    done(null,doc)
-  })
-})
-// Auth strategies
-const LocalStrategy = require('passport-local')
-passport.use(new LocalStrategy(
-  function(username, password, done) {
-    myDataBase.findOne({username: username}, function (err, user) {
-      console.log(`user ${username} attempted to login`)
-      if (err) { return done(err) }
-      if (!user) { return done(null, false) }
-      if (!bcrypt.compareSync(password, user.password)) { return done(null, false) }
-      return done(null, user)
-    })
-  }
-))
-
 
 }).catch((e) => {
   app.route('/').get((req, res) => {
