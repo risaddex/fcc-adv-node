@@ -8,7 +8,10 @@ const passport = require('passport')
 const routes = require('./routes')
 const auth = require('./auth');
 
+
 const app = express();
+const http = require('http').createServer(app)
+const io = require('socket.io')(http)
 
 // setting pug
 app.set('view engine', 'pug')
@@ -33,6 +36,9 @@ myDB(async client => {
   // index
   routes(app, myDataBase)
   auth(app, myDataBase)
+  io.on('connection', (socket) => {
+    console.log('a user has connected')
+  })
   
 
 }).catch((e) => {
@@ -46,6 +52,6 @@ myDB(async client => {
 
 
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
+http.listen(PORT, () => {
   console.log('Listening on port ' + PORT);
 });
