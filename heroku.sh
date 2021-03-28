@@ -1,3 +1,3 @@
 git add .
-git commit -m "Implementation of Social Authentication III"
+git commit -m "Authentication with Socket.IO"
 git push heroku main
