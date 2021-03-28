@@ -36,7 +36,11 @@ myDB(async client => {
   // index
   routes(app, myDataBase)
   auth(app, myDataBase)
+  // tracking current users quantity
+  let currentUsers = 0
   io.on('connection', (socket) => {
+    ++currentUsers
+    io.emit('user count', currentUsers)
     console.log('a user has connected')
   })
   
